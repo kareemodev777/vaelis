@@ -1,0 +1,169 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ink: var(--ink);
+  --color-parchment: var(--parchment);
+  --color-beige: var(--beige);
+  --color-burgundy: var(--burgundy);
+  --color-hairline: var(--hairline);
+  --font-serif: "Cormorant Garamond", "Times New Roman", serif;
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+}
+
+:root {
+  --radius: 0rem;
+
+  --ink: oklch(0.185 0 0);            /* #0F0F0F */
+  --parchment: oklch(0.972 0.008 85); /* #F8F6F2 */
+  --beige: oklch(0.845 0.026 79);     /* #D8CBB8 */
+  --burgundy: oklch(0.323 0.093 15);  /* #5A1E28 */
+  --hairline: oklch(0.185 0 0 / 12%);
+
+  --background: var(--parchment);
+  --foreground: var(--ink);
+  --card: var(--parchment);
+  --card-foreground: var(--ink);
+  --popover: var(--parchment);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--parchment);
+  --secondary: var(--beige);
+  --secondary-foreground: var(--ink);
+  --muted: var(--beige);
+  --muted-foreground: oklch(0.45 0.008 60);
+  --accent: var(--burgundy);
+  --accent-foreground: var(--parchment);
+  --destructive: oklch(0.5 0.18 25);
+  --destructive-foreground: var(--parchment);
+  --border: var(--hairline);
+  --input: var(--hairline);
+  --ring: var(--burgundy);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    line-height: 1.85;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-serif);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+  }
+}
+
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+/* Nav links, menu toggle and small footnotes: same voice as `eyebrow`, a touch smaller. */
+@utility label-sm {
+  font-family: var(--font-sans);
+  font-size: 0.625rem;
+  font-weight: 400;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+/* Main section titles (About, What We Do, ...): slightly larger and bolder than `eyebrow`. */
+@utility section-title {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+/* Hero: solid ink with a faint burgundy cast. No imagery. */
+@utility hero-bg {
+  background-color: var(--ink);
+  background-image: radial-gradient(
+    ellipse 75% 60% at 50% 45%,
+    color-mix(in oklch, var(--burgundy) 30%, transparent),
+    transparent 72%
+  );
+}
+
+@utility rule-thin {
+  height: 1px;
+  width: 100%;
+  background-color: currentColor;
+  opacity: 0.18;
+}
+
+@utility link-underline {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -0.35rem;
+    height: 1px;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: left;
+    background-color: var(--burgundy);
+    transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  &:hover::after,
+  &[data-active="true"]::after { transform: scaleX(1); }
+}
+
+@utility reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 1200ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1200ms cubic-bezier(0.16, 1, 0.3, 1);
+  &[data-visible="true"] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+}
