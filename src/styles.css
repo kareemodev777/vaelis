@@ -72,6 +72,7 @@
 
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 4.5rem;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -87,7 +88,23 @@
     font-family: var(--font-serif);
     font-weight: 300;
     letter-spacing: -0.01em;
+    text-wrap: balance;
   }
+
+  p { text-wrap: pretty; }
+
+  :focus-visible {
+    outline: 1px solid var(--burgundy);
+    outline-offset: 0.35rem;
+  }
+}
+
+/* ---------- Motion tokens: one easing, three durations, shared by every transition. ---------- */
+:root {
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 500ms;   /* hover, colour */
+  --dur: 1100ms;       /* scroll reveals */
+  --dur-slow: 1600ms;  /* images, hero */
 }
 
 @utility eyebrow {
@@ -116,16 +133,6 @@
   text-transform: uppercase;
 }
 
-/* Hero: solid ink with a faint burgundy cast. No imagery. */
-@utility hero-bg {
-  background-color: var(--ink);
-  background-image: radial-gradient(
-    ellipse 75% 60% at 50% 45%,
-    color-mix(in oklch, var(--burgundy) 30%, transparent),
-    transparent 72%
-  );
-}
-
 @utility rule-thin {
   height: 1px;
   width: 100%;
@@ -133,37 +140,175 @@
   opacity: 0.18;
 }
 
+/* Hover underline for nav links (the active indicator is a separate sliding bar). */
 @utility link-underline {
   position: relative;
   &::after {
     content: "";
     position: absolute;
     left: 0;
-    bottom: -0.35rem;
+    bottom: -0.4rem;
     height: 1px;
     width: 100%;
     transform: scaleX(0);
     transform-origin: left;
     background-color: var(--burgundy);
-    transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform var(--dur-fast) var(--ease);
   }
   &:hover::after,
-  &[data-active="true"]::after { transform: scaleX(1); }
+  &:focus-visible::after { transform: scaleX(1); }
 }
 
-@utility reveal {
-  opacity: 0;
-  transform: translateY(18px);
-  transition:
-    opacity 1200ms cubic-bezier(0.16, 1, 0.3, 1),
-    transform 1200ms cubic-bezier(0.16, 1, 0.3, 1);
-  &[data-visible="true"] {
+/* Oversized, absolutely positioned image layer that `useParallax` drifts inside an overflow-hidden box. */
+@utility parallax-bleed {
+  position: absolute;
+  inset: -9% 0;
+  will-change: transform;
+}
+
+@layer components {
+  /* ---------- Scroll reveals (see Reveal.tsx). All variants share .reveal + data-visible. ---------- */
+  .reveal {
+    --reveal-delay: 0ms;
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+      opacity var(--dur) var(--ease) var(--reveal-delay),
+      transform var(--dur) var(--ease) var(--reveal-delay);
+  }
+  .reveal[data-visible="true"] {
     opacity: 1;
     transform: none;
+  }
+
+  /* Line-mask: the mask is a static clip, the inner block rises out of it. */
+  .reveal-clip,
+  .reveal-wipe {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .reveal-clip > .reveal-mask {
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path var(--dur) var(--ease) var(--reveal-delay);
+  }
+  .reveal-clip .reveal-clip-inner {
+    transform: translateY(60%);
+    transition: transform var(--dur) var(--ease) var(--reveal-delay);
+  }
+  .reveal-clip[data-visible="true"] > .reveal-mask { clip-path: inset(-0.25em 0 -0.25em 0); }
+  .reveal-clip[data-visible="true"] .reveal-clip-inner { transform: none; }
+
+  /* Image wipe: box opens top-to-bottom while the photograph inside settles from a slight zoom. */
+  .reveal-wipe > .reveal-mask {
+    position: relative;
+    height: 100%;
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path var(--dur-slow) var(--ease) var(--reveal-delay);
+  }
+  .reveal-wipe img {
+    transform: scale(1.08);
+    transition: transform calc(var(--dur-slow) * 1.25) var(--ease) var(--reveal-delay);
+  }
+  .reveal-wipe[data-visible="true"] > .reveal-mask { clip-path: inset(0); }
+  .reveal-wipe[data-visible="true"] img { transform: none; }
+
+  /* Hairline drawing in from the left. */
+  .reveal-line {
+    opacity: 1;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-slow) var(--ease) var(--reveal-delay);
+  }
+  .reveal-line[data-visible="true"] { transform: none; }
+
+  /* ---------- Hero intro: runs once on load, no JS. ---------- */
+  .hero-in {
+    --i: 0;
+    animation: hero-rise var(--dur-slow) var(--ease) both;
+    animation-delay: calc(200ms + var(--i) * 220ms);
+  }
+  .hero-in-line {
+    --i: 0;
+    transform-origin: center;
+    animation: hero-draw var(--dur-slow) var(--ease) both;
+    animation-delay: calc(200ms + var(--i) * 220ms);
+  }
+  .header-in {
+    animation: fade-in var(--dur-slow) var(--ease) 900ms both;
+  }
+
+  /* Hero scroll cue: a short highlight falls down the hairline, pauses, repeats. */
+  .scroll-cue {
+    position: relative;
+    overflow: hidden;
+  }
+  .scroll-cue::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent, var(--burgundy), transparent);
+    transform: translateY(-100%);
+    animation: cue-fall 2800ms var(--ease) 2200ms infinite;
+  }
+  @keyframes cue-fall {
+    0%   { transform: translateY(-100%); }
+    60%  { transform: translateY(100%); }
+    100% { transform: translateY(100%); }
+  }
+
+  @keyframes hero-rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes hero-draw {
+    from { transform: scaleX(0); }
+    to   { transform: none; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ---------- Mobile menu: always mounted, slides/fades in. ---------- */
+  .menu-panel {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+      opacity var(--dur-fast) var(--ease),
+      transform var(--dur-fast) var(--ease),
+      visibility 0s linear var(--dur-fast);
+  }
+  .menu-panel[data-open="true"] {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition-delay: 0s;
+  }
+  .menu-panel li {
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity var(--dur) var(--ease),
+      transform var(--dur) var(--ease);
+  }
+  .menu-panel[data-open="true"] li {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(60ms + var(--i, 0) * 45ms);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .reveal { opacity: 1 !important; transform: none !important; }
+  .reveal, .reveal-mask, .reveal-clip-inner, .reveal-wipe img, .menu-panel li {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    transition: none !important;
+  }
+  .hero-in, .hero-in-line, .header-in, .scroll-cue::after { animation: none !important; }
+  .menu-panel { transition: none !important; }
+  .parallax-bleed { inset: 0; }
 }
