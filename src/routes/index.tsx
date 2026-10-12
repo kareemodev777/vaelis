@@ -474,7 +474,7 @@ export default function Index() {
             </Reveal>
             <Reveal delay={250}>
               <a
-                href="mailto:info@vaelis.com"
+                href="mailto:office@vaelis.ae"
                 className="eyebrow mt-12 inline-block border border-parchment/40 px-12 py-5 text-parchment transition-[background-color,border-color,color] duration-[var(--dur-fast)] ease-[var(--ease)] hover:border-parchment hover:bg-parchment hover:text-burgundy focus-visible:outline-parchment md:mt-14"
               >
                 Contact Us
