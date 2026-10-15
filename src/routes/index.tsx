@@ -1,9 +1,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Reveal } from "@/components/Reveal";
 import { useParallax } from "@/components/useParallax";
-// PLACEHOLDER wordmarks — drop the official logo files in at these same paths to swap them site-wide.
-import logoLight from "@/assets/logo-light.svg";
-import logoDark from "@/assets/logo-dark.svg";
+// Official wordmark, dark (light backgrounds: header) and light (dark backgrounds: footer).
+import logoLight from "@/assets/logo-light.png";
+import logoDark from "@/assets/logo-dark.png";
 // Official logo (monogram + wordmark), used in the hero.
 import logoFull from "@/assets/logo-full.png";
 import aboutImg from "@/assets/about.jpg";
@@ -140,10 +140,10 @@ function Nav() {
           <img
             src={logoDark}
             alt="Vaelis"
-            width={600}
-            height={100}
-            className={`w-auto origin-left transition-transform duration-[var(--dur)] ease-[var(--ease)] md:h-4 ${
-              solid ? "h-3.5 md:scale-[0.88]" : "h-3.5"
+            width={1200}
+            height={194}
+            className={`w-auto origin-left transition-transform duration-[var(--dur)] ease-[var(--ease)] md:h-3.5 ${
+              solid ? "h-3 md:scale-[0.88]" : "h-3"
             }`}
           />
         </a>
@@ -480,7 +480,7 @@ export default function Index() {
 
       <footer className="bg-ink py-10 text-parchment md:py-12">
         <div className={`${CONTAINER} flex flex-col gap-5 md:flex-row md:items-center md:justify-between`}>
-          <img src={logoLight} alt="Vaelis" width={600} height={100} className="h-3 w-auto self-start opacity-80 md:self-auto" />
+          <img src={logoLight} alt="Vaelis" width={1200} height={194} className="h-2.5 w-auto self-start opacity-80 md:self-auto" />
           <span className="label-sm text-parchment/40">Based in the United Arab Emirates.</span>
         </div>
       </footer>
