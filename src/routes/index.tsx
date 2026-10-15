@@ -325,9 +325,9 @@ export default function Index() {
                   </p>
                   <p>
                     Our work spans strategic advisory, business development, representation and
-                    investments. We support clients seeking growth, capital, partnerships, market
-                    expansion and strategic opportunities, while also investing alongside
-                    businesses where we believe we can contribute long-term value.
+                    investments. We support clients seeking growth, capital, partnerships and
+                    market expansion, while also investing alongside businesses where we
+                    believe we can contribute long-term value.
                   </p>
                 </Reveal>
                 <Reveal variant="line" delay={200} className="my-10 w-12 md:my-12">
@@ -337,12 +337,6 @@ export default function Index() {
                   <p>
                     Vaelis was established to build businesses, create opportunities and
                     participate in ventures with long-term potential.
-                  </p>
-                  <p>
-                    Our work spans strategic advisory, business development, representation and
-                    investments. We support clients seeking growth, capital, partnerships,
-                    market expansion and strategic opportunities, while also investing
-                    alongside businesses where we believe we can contribute long-term value.
                   </p>
                 </Reveal>
               </div>
